@@ -1,35 +1,49 @@
 import { useState, useEffect } from 'react'
 import { Route, Routes, useMatch } from 'react-router'
 import chequeService from './services/cheques'
+import customerService from './services/customer'
 
-//import './App.css'
+import { ChequeType, CustomerType } from '../types.ts'
 
 import Date from './components/Date'
 import Cheque from './components/Cheque'
+import Customer from './components/Customer'
+import ChequeForm from './components/ChequeForm'
 
 function App() {
 
-  const [data, setData] = useState([])
+  const [chequeData, setChequeData] = useState<ChequeType[]>([])
+  const [customerData, setCustomerData] = useState<CustomerType[]>([])
   
   useEffect(() => {
     chequeService.getCheques().then(res => {
-      setData(res)
-      console.log(res[0])
+      setChequeData(res)
+      //console.log(res[0])
+    })
+    customerService.getCustomers().then(res => {
+      setCustomerData(res)
+      //console.log(res[0])
     })
   }, [])
 
-  const match = useMatch('/cheque/:chequeid')
-  const cheque = match
-    ? data.find(c => c._id === match.params.chequeid)
-    : null
+  const match1 = useMatch('/cheque/:chequeid')
+  const cheque = match1
+    ? chequeData.find(c => c.id === match1.params.chequeid)
+    : undefined
+
+  const match2 = useMatch('/customer/:custid')
+  const cust = match2
+    ? customerData.find(c => c.id === match2.params.custid)
+    : undefined
 
   return (
     <>
       <Routes>
         <Route path='/' element={<Date  />} />
         <Route path='/date/:dateid' />
-        <Route path='/customer/:custid' />
+        <Route path='/customer/:custid' element={<Customer cust={cust} />} />
         <Route path='/cheque/:chequeid' element={<Cheque ch={cheque} />} />
+        <Route path='/newcheque' element={<ChequeForm />} />
       </Routes>
     </>
   )
