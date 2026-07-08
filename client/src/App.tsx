@@ -1,56 +1,57 @@
-import { useState, useEffect } from 'react'
-import { Route, Routes, useMatch } from 'react-router'
-import chequeService from './services/cheques'
-import customerService from './services/customer'
+import { useState, useEffect } from "react";
+import { Route, Routes, useMatch } from "react-router";
+import chequeService from "./services/chequeServiceClient.ts";
+import customerService from "./services/customerServiceClient.ts";
 
-import { ChequeType, CustomerType } from '../types.ts'
+import { ChequeType, CustomerType } from "../types.ts";
 
-import Date from './components/Date'
-import Cheque from './components/Cheque'
-import Customer from './components/Customer'
-import ChequeForm from './components/ChequeForm'
+import Date from "./components/Date";
+import Cheque from "./components/Cheque";
+import Customer from "./components/Customer";
+import ChequeForm from "./components/ChequeForm";
 
 function App() {
+  const [chequeData, setChequeData] = useState<ChequeType[]>([]);
+  const [customerData, setCustomerData] = useState<CustomerType[]>([]);
 
-  const [chequeData, setChequeData] = useState<ChequeType[]>([])
-  const [customerData, setCustomerData] = useState<CustomerType[]>([])
-  
   useEffect(() => {
-    chequeService.getCheques().then(res => {
-      setChequeData(res)
+    chequeService.getCheques().then((res) => {
+      setChequeData(res);
       //console.log(res[0])
-    })
-    customerService.getCustomers().then(res => {
-      setCustomerData(res)
-      //console.log(res[0])
-    })
-  }, [])
+    });
+    customerService.getCustomers().then((res) => {
+      setCustomerData(res);
+      console.log(res[0])
+      console.log(res)
 
-  const match1 = useMatch('/cheque/:chequeid')
+    });
+  }, []);
+
+  const match1 = useMatch("/cheque/:chequeid");
   const cheque = match1
-    ? chequeData.find(c => c.id === match1.params.chequeid)
-    : undefined
+    ? chequeData.find((c) => c.id === match1.params.chequeid)
+    : undefined;
 
-  const match2 = useMatch('/customer/:custid')
+  const match2 = useMatch("/customer/:custid");
   const cust = match2
-    ? customerData.find(c => c.id === match2.params.custid)
-    : undefined
+    ? customerData.find((c) => c.id === match2.params.custid)
+    : undefined;
 
+  console.log(chequeData)
   return (
     <>
       <Routes>
-        <Route path='/' element={<Date  />} />
-        <Route path='/date/:dateid' />
-        <Route path='/customer/:custid' element={<Customer cust={cust} />} />
-        <Route path='/cheque/:chequeid' element={<Cheque ch={cheque} />} />
-        <Route path='/newcheque' element={<ChequeForm />} />
+        <Route path="/" element={<Date />} />
+        <Route path="/date/:dateid" />
+        <Route path="/customer/:custid" element={<Customer cust={cust} />} />
+        <Route path="/cheque/:chequeid" element={<Cheque ch={cheque} />} />
+        <Route path="/newcheque" element={<ChequeForm cheques={chequeData} setCheques={setChequeData} />} />
       </Routes>
     </>
-  )
+  );
 }
 
-export default App
-
+export default App;
 
 /*
 

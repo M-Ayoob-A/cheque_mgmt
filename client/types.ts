@@ -9,9 +9,7 @@ export interface ChequeType {
   realisation_date: string;
 }
 
-export type ChequeFormType = Omit<ChequeType,
-                                  "id" | "submitted" | 
-                                  "agent" | "issue_date">;
+export type ChequeFormType = Omit<ChequeType, "id" | "submitted">;
 
 export interface CustomerType {
   id: string;
@@ -20,5 +18,6 @@ export interface CustomerType {
   email: string;
   address: string;
   notes: string;
-  cheques: string;
 }
+
+export type CustomerFormType = Omit<CustomerType, "id">;

@@ -2,7 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import data from './data.ts';
-import chequesRouter from './controllers/cheques.ts';
+import chequesRouter from './controllers/chequesController.ts';
+import customerRouter from './controllers/customersCont.ts';
 import dotenv from 'dotenv'
 
 const app = express()
@@ -25,6 +26,8 @@ if (MONGODB_URI) {
 }
 
 app.use('/api/cheques', chequesRouter)
+app.use('/api/customers', customerRouter)
+
 
 app.get('/customers', (_req, res) => {
   res.json(data.custData)

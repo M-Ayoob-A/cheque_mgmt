@@ -8,11 +8,23 @@ import Button from '@mui/material/Button';
 
 import { ChequeType } from '../../types.ts'
 import { useNavigate } from 'react-router';
+import { useState } from 'react';
+import ChangeRealDateDialog from './ChangeRealDateDialog.tsx';
 
 const Cheque = ({ ch }: { ch : ChequeType | undefined }) => {
   
   const navigate = useNavigate()
-  
+
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true)
+  }
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false)
+  }
+
   if(!ch) {
     return <></>
   }
@@ -33,7 +45,7 @@ const Cheque = ({ ch }: { ch : ChequeType | undefined }) => {
               <TableCell sx={{ fontWeight: 'bold' }} >Customer</TableCell>
               <TableCell>{ch.customer}</TableCell>
               <TableCell>
-                <Button onClick={() => {navigate(`/customer/6a212f3c7a1bed6371952198`)}} >
+                <Button onClick={() => {navigate(`/customer/${ch.customer}`)}} >
                   View Customer Details
                 </Button>
               </TableCell>
@@ -50,7 +62,7 @@ const Cheque = ({ ch }: { ch : ChequeType | undefined }) => {
               <TableCell sx={{ fontWeight: 'bold' }} >Realisation Date</TableCell>
               <TableCell>{ch.realisation_date}</TableCell>
               <TableCell>
-                <Button>Change Realisation Date</Button>
+                <Button onClick={handleOpenDialog} >Change Realisation Date</Button>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -69,6 +81,7 @@ const Cheque = ({ ch }: { ch : ChequeType | undefined }) => {
           </TableBody>
         </Table>
       </TableContainer>
+      <ChangeRealDateDialog openDialog={openDialog} handleClose={handleCloseDialog} />
     </>
   )
 }

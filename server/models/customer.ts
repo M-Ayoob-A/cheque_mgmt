@@ -21,11 +21,11 @@ const customerSchema = new Schema({
   notes: {
     type: String,
     required: true
-  },
+  }/*,
   cheques: {
     type: [Schema.Types.ObjectId],
     ref: 'Cheque'
-  }
+  }*/
 }, {
   toJSON: {
     virtuals: true,

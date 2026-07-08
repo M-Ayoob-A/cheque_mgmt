@@ -7,9 +7,13 @@ const chequeSchema = new Schema({
     required: true
   },
   customer: {
+    type: String,
+    required: true
+  },
+  /*{
     type: Schema.Types.ObjectId,
     ref: 'Customer'
-  },
+  },*/
   submitted: {
     type: Boolean,
     required: true
