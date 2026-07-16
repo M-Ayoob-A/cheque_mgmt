@@ -1,21 +1,14 @@
 import { useNavigate } from "react-router";
 import { useState } from "react";
-
-import chequeService from "../services/chequeServiceClient.ts";
-import customerService from "../services/customerServiceClient.ts";
+import { useCheques } from "../hooks/useCheques.ts";
+import { useCustomers } from "../hooks/useCustomers.ts";
 
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import { ChequeType } from "../../types.ts";
 import { Alert, Box } from "@mui/material";
 
-interface chequeFormTools {
-  cheques: ChequeType[];
-  setCheques: React.Dispatch<React.SetStateAction<ChequeType[]>>;
-}
-
-const ChequeForm = ({ cheques, setCheques } : chequeFormTools) => {
+const ChequeForm = () => {
   // customer details
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
@@ -34,6 +27,9 @@ const ChequeForm = ({ cheques, setCheques } : chequeFormTools) => {
 
   const navigate = useNavigate();
 
+  const { addCheque } = useCheques()
+  const { addCustomer } = useCustomers()
+
   const notify = (msg: string) => {
     setErrMsg(msg)
     setTimeout(() => {
@@ -45,7 +41,7 @@ const ChequeForm = ({ cheques, setCheques } : chequeFormTools) => {
     event.preventDefault();
 
     try {
-      const newCustomerResult = await customerService.createNew({
+      const TSQnewCustomer = await addCustomer({
         name: customerName,
         phone: customerPhone,
         email: customerEmail,
@@ -53,19 +49,14 @@ const ChequeForm = ({ cheques, setCheques } : chequeFormTools) => {
         notes: customerNotes,
       })
 
-      const newChequeResult = await chequeService.createNew({
-        customer: newCustomerResult.id,
+      await addCheque({
+        customer: TSQnewCustomer.id,
         bank: bank,
         amount: amount,
         realisation_date: realDate,
         issue_date: issueDate,
         agent: agent,
       })
-
-      // EDIT FOLLOWING:
-      setCheques(cheques.concat(newChequeResult));
-      // TANSTACK - add to chequelist
-      //option 2 - zustand
     } catch (error) {
       if (error instanceof Error) {
         console.log("cheqeue form: Customer creation error: ", error.message)
@@ -153,7 +144,3 @@ const ChequeForm = ({ cheques, setCheques } : chequeFormTools) => {
 };
 
 export default ChequeForm;
-
-
-// create new cust and new cheque - one go
-// new cust then new cheque

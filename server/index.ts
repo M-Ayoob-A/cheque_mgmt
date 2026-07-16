@@ -3,7 +3,7 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import data from './data.ts';
 import chequesRouter from './controllers/chequesController.ts';
-import customerRouter from './controllers/customersCont.ts';
+import customerRouter from './controllers/customersController.ts';
 import dotenv from 'dotenv'
 
 const app = express()

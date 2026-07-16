@@ -1,5 +1,5 @@
-import { Schema, model, type InferSchemaType, Types } from 'mongoose';
-import type { MChequeType } from './cheque.ts';
+import { Schema, model, type InferSchemaType/*, Types*/ } from 'mongoose';
+//import type { MChequeType } from './cheque.ts';
 
 const customerSchema = new Schema({
   name: {
@@ -21,11 +21,7 @@ const customerSchema = new Schema({
   notes: {
     type: String,
     required: true
-  }/*,
-  cheques: {
-    type: [Schema.Types.ObjectId],
-    ref: 'Cheque'
-  }*/
+  }
 }, {
   toJSON: {
     virtuals: true,
@@ -38,7 +34,5 @@ const customerSchema = new Schema({
   }
 })
 
-export type MCustomerType = InferSchemaType<typeof customerSchema> & {
-  cheques: Types.ObjectId | [MChequeType]; 
-};
-export const CustomerModel = model<MCustomerType>('User', customerSchema);
+export type MCustomerType = InferSchemaType<typeof customerSchema>
+export const CustomerModel = model<MCustomerType>('Customer', customerSchema);

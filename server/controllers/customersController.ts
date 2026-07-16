@@ -1,7 +1,16 @@
 import { CustomerModel, type MCustomerType } from '../models/customer.ts';
-//import { type ChequeType } from '../types.ts' 
-import express, { /*type NextFunction,*/ type Response, type Request } from 'express';
-//import { CustomerModel } from '../models/customer.ts';
+import express, { type NextFunction, type Response, type Request } from 'express';
+import { CustomerSchema } from '../types.ts';
+import errorMiddleware from '../middleware/errorMiddleware.ts';
+
+const customerParser = (req: Request, _res: Response, next: NextFunction) => {
+  try {
+    CustomerSchema.parse(req.body)
+    next()
+  } catch (err: unknown) {
+    next(err)
+  }
+}
 
 const custRouter = express.Router()
 
@@ -15,7 +24,7 @@ custRouter.get('/:id', async (req, res) => {
   res.json(cheque)
 })
 
-custRouter.post('/', async (req, res) => {
+custRouter.post('/', customerParser, async (req, res) => {
   //const user = request.user
   const reqbody = req.body
   console.log(reqbody)
@@ -35,5 +44,31 @@ custRouter.post('/', async (req, res) => {
   // chequeWithCustomerDetails = await newCheque.populate('customer')
   res.status(201).json(newCustomer)
 })
+
+
+custRouter.put('/:id', customerParser, async (req: Request, res: Response) => {
+  //const user = request.user <, {}, MCustomerType>
+  const reqbody: MCustomerType = req.body
+  console.log(reqbody)
+
+  let customerToUpdate = await CustomerModel.findById(req.params.id)
+
+  if (!customerToUpdate) {
+    res.status(400).json({ error: 'Invalid blog ID' })
+  } else {
+    customerToUpdate.set(reqbody)
+    const newCustomer = await customerToUpdate.save()
+    res.status(201).json(newCustomer)
+  }
+})
+
+custRouter.delete('/:id', async (req: Request, res: Response) => {
+  //const deletedCustomer = 
+  await CustomerModel.findByIdAndDelete(req.params.id)
+  //if (deletedCustomer) res.status(404).send("Could not find customer")
+  res.status(201).send()
+})
+
+custRouter.use(errorMiddleware)
 
 export default custRouter

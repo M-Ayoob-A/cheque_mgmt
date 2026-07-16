@@ -7,13 +7,9 @@ const chequeSchema = new Schema({
     required: true
   },
   customer: {
-    type: String,
-    required: true
-  },
-  /*{
     type: Schema.Types.ObjectId,
     ref: 'Customer'
-  },*/
+  },
   submitted: {
     type: Boolean,
     required: true
@@ -47,8 +43,11 @@ const chequeSchema = new Schema({
 })
 
 export type MChequeType = InferSchemaType<typeof chequeSchema> & {
-  customer: Types.ObjectId | [MCustomerType]; 
+  customer: Types.ObjectId | MCustomerType; 
 };
 export const ChequeModel = model<MChequeType>('Cheque', chequeSchema);
 
 //module.exports = model('Cheque', chequeSchema)
+
+//6a5424488e8698cada8973bd
+//6a5424488e8698cada8973bc

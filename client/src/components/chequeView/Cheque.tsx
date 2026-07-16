@@ -6,16 +6,19 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 
-import { ChequeType } from '../../types.ts'
+import { ChequeType } from '../../../types.ts'
 import { useNavigate } from 'react-router';
 import { useState } from 'react';
 import ChangeRealDateDialog from './ChangeRealDateDialog.tsx';
+import { useCheques } from '../../hooks/useCheques.ts';
 
 const Cheque = ({ ch }: { ch : ChequeType | undefined }) => {
   
   const navigate = useNavigate()
 
   const [openDialog, setOpenDialog] = useState(false);
+
+  const { deleteCheque } = useCheques()
 
   const handleOpenDialog = () => {
     setOpenDialog(true)
@@ -29,10 +32,23 @@ const Cheque = ({ ch }: { ch : ChequeType | undefined }) => {
     return <></>
   }
 
+  const handleDelete = async () => {
+    try {
+      await deleteCheque(ch.id)
+      navigate("/")
+    } catch (err) {
+      if (err instanceof Error) {
+        console.log("cheqeue form: Customer creation error: ", err.message)
+      }
+      console.log("cheqeue form: UNKNOWN Customer creation error: ", err)
+    }
+
+  }
+
   return (
     <>
       <Typography variant="h5">
-        Cheque from {ch.customer}
+        Cheque from {ch.customer ? ch.customer.name : "Unknown Customer"}
       </Typography>
       <TableContainer >
         <Table>
@@ -43,9 +59,9 @@ const Cheque = ({ ch }: { ch : ChequeType | undefined }) => {
             </TableRow>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }} >Customer</TableCell>
-              <TableCell>{ch.customer}</TableCell>
+              <TableCell>{ch.customer ? ch.customer.name : "Not Found"}</TableCell>
               <TableCell>
-                <Button onClick={() => {navigate(`/customer/${ch.customer}`)}} >
+                <Button disabled={!ch.customer} onClick={() => {navigate(`/customer/${ch.customer ? ch.customer.id : ""}`)}} >
                   View Customer Details
                 </Button>
               </TableCell>
@@ -81,7 +97,10 @@ const Cheque = ({ ch }: { ch : ChequeType | undefined }) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <ChangeRealDateDialog openDialog={openDialog} handleClose={handleCloseDialog} />
+      <Button onClick={handleDelete} >
+        Delete Cheque Record
+      </Button>
+      <ChangeRealDateDialog openDialog={openDialog} handleClose={handleCloseDialog} id={ch.id} />
     </>
   )
 }

@@ -16,7 +16,3 @@ content-type: application/json
     "realisation_date": "2026-09-02",
     "issue_date": "2026-06-03"
 }
-
-###
-
-http://localhost:3001/api/patients

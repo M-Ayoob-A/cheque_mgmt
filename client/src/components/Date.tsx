@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import chequeService from "../services/chequeServiceClient";
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { useCheques } from "../hooks/useCheques";
 
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -16,19 +17,28 @@ import { ChequeType } from "../../types";
 const Date = () => {
   const [data, setData] = useState<ChequeType[]>([]);
 
+  const { cheques, isPending } = useCheques()
+
   const navigate = useNavigate();
 
   useEffect(() => {
     chequeService.getCheques().then((res) => {
       setData(res);
-      console.log(res[0]);
     });
   }, []);
+
+  if (isPending) {
+    return <>loading data</>
+  }
+
+  if (!cheques) {
+    return <>no data</>
+  }
 
   return (
     <>
       <Typography variant="h5">Cheques to be realised</Typography>
-      {data.length ? (
+      {cheques.length ? (
         <TableContainer>
           <Table>
             <TableHead sx={{ '& th': { fontWeight: 'bold' } }}>
@@ -45,7 +55,7 @@ const Date = () => {
               {data.map((ch) => (
                 <TableRow key={ch.id}>
                   <TableCell>{ch.id}</TableCell>
-                  <TableCell>{ch.customer}</TableCell>
+                  <TableCell>{ch.customer ? ch.customer.name : "Not Found"}</TableCell>
                   <TableCell>{ch.amount}</TableCell>
                   <TableCell>{ch.issue_date}</TableCell>
                   <TableCell>

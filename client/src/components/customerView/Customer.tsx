@@ -6,9 +6,22 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 
-import { CustomerType } from '../../types.ts'
+import { CustomerType } from '../../../types.ts'
+import EditCustomerDialog from './EditCustomerDialog.tsx';
+import { useState } from 'react';
 
 const Customer = ({ cust }: { cust: CustomerType | undefined }) => {
+  
+  const [openDialog, setOpenDialog] = useState(false);
+  
+  const handleOpenDialog = () => {
+    setOpenDialog(true)
+  }
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false)
+  }
+
   if(!cust) {
     return <><div>nothing found</div></>
   }
@@ -45,7 +58,9 @@ const Customer = ({ cust }: { cust: CustomerType | undefined }) => {
         </Table>
       </TableContainer>
 
-      <Button>Edit Customer Details</Button>
+      <Button onClick={handleOpenDialog} >Edit Customer Details</Button>
+      <EditCustomerDialog openDialog={openDialog} handleClose={handleCloseDialog} customer={cust} />
+
     </>
   )
 }
