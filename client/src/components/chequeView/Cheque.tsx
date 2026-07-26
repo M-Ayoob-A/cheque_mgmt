@@ -6,19 +6,26 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 
-import { ChequeType } from '../../../types.ts'
+//import { ChequeType } from '../../../types.ts'
 import { useNavigate } from 'react-router';
 import { useState } from 'react';
 import ChangeRealDateDialog from './ChangeRealDateDialog.tsx';
 import { useCheques } from '../../hooks/useCheques.ts';
+import { useParams } from 'react-router';
 
-const Cheque = ({ ch }: { ch : ChequeType | undefined }) => {
+const Cheque = (/*{ ch }: { ch : ChequeType | undefined }*/) => {
   
   const navigate = useNavigate()
 
   const [openDialog, setOpenDialog] = useState(false);
 
-  const { deleteCheque } = useCheques()
+  const { chequeid } = useParams();
+
+  const { cheques, deleteCheque } = useCheques()
+
+  const ch = chequeid && cheques
+    ? cheques.find((c) => c.id === chequeid)
+    : undefined;
 
   const handleOpenDialog = () => {
     setOpenDialog(true)

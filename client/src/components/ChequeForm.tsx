@@ -6,9 +6,12 @@ import { useCustomers } from "../hooks/useCustomers.ts";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import { Alert, Box } from "@mui/material";
+import { Alert, Autocomplete, Box, FormControlLabel, Switch } from "@mui/material";
 
 const ChequeForm = () => {
+  // new/returning customer
+  const [newCustomer, setNewCustomer] = useState(false)
+  
   // customer details
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
@@ -28,7 +31,7 @@ const ChequeForm = () => {
   const navigate = useNavigate();
 
   const { addCheque } = useCheques()
-  const { addCustomer } = useCustomers()
+  const { customers, addCustomer } = useCustomers()
 
   const notify = (msg: string) => {
     setErrMsg(msg)
@@ -37,26 +40,44 @@ const ChequeForm = () => {
     }, 4500)
   }
 
+  const addChequeForReturningCustomer = async () => {
+    const selectedCustomer = customers?.find(c => c.name)
+    if (!selectedCustomer) throw new Error("Could not find the specified customer")
+    await addCheque({
+      customer: selectedCustomer.id,
+      bank: bank,
+      amount: amount,
+      realisation_date: realDate,
+      issue_date: issueDate,
+      agent: agent
+    })
+  }
+
+  const addChequeForNewCustomer = async () => {
+    const TSQnewCustomer = await addCustomer({
+      name: customerName,
+      phone: customerPhone,
+      email: customerEmail,
+      address: customerAddress,
+      notes: customerNotes,
+    })
+
+    await addCheque({
+      customer: TSQnewCustomer.id,
+      bank: bank,
+      amount: amount,
+      realisation_date: realDate,
+      issue_date: issueDate,
+      agent: agent
+    })
+  }
+
   const handleSubmit = async (event: React.SyntheticEvent) => {
     event.preventDefault();
 
     try {
-      const TSQnewCustomer = await addCustomer({
-        name: customerName,
-        phone: customerPhone,
-        email: customerEmail,
-        address: customerAddress,
-        notes: customerNotes,
-      })
-
-      await addCheque({
-        customer: TSQnewCustomer.id,
-        bank: bank,
-        amount: amount,
-        realisation_date: realDate,
-        issue_date: issueDate,
-        agent: agent,
-      })
+      if (newCustomer) addChequeForNewCustomer()
+      else addChequeForReturningCustomer()
     } catch (error) {
       if (error instanceof Error) {
         console.log("cheqeue form: Customer creation error: ", error.message)
@@ -64,7 +85,6 @@ const ChequeForm = () => {
       }
       console.log("cheqeue form: UNKNOWN Customer creation error", error)
       notify("cheqeue form: Customer creation error: " + error)
-
     }
 
     navigate("/");
@@ -80,31 +100,80 @@ const ChequeForm = () => {
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '60vw' }}>
         <Typography variant="h6">Customer Details</Typography>
-        <TextField
-          label="Name"
-          value={customerName}
-          onChange={({ target }) => setCustomerName(target.value)}
+
+        <FormControlLabel 
+          control={
+            <Switch checked={newCustomer} onChange={({ target }) => setNewCustomer(target.checked)} />
+          } 
+          label="New Customer"
         />
-        <TextField
-          label="Phone"
-          value={customerPhone}
-          onChange={({ target }) => setCustomerPhone(target.value)}
-        />
-        <TextField
-          label="Email"
-          value={customerEmail}
-          onChange={({ target }) => setCustomerEmail(target.value)}
-        />
-        <TextField
-          label="Address"
-          value={customerAddress}
-          onChange={({ target }) => setCustomerAddress(target.value)}
-        />
-        <TextField
-          label="Notes"
-          value={customerNotes}
-          onChange={({ target }) => setCustomerNotes(target.value)}
-        />
+
+        {
+          newCustomer
+          ? <>
+              <TextField
+                label="Name"
+                value={customerName}
+                onChange={({ target }) => setCustomerName(target.value)}
+              />
+              <TextField
+                label="Phone"
+                value={customerPhone}
+                onChange={({ target }) => setCustomerPhone(target.value)}
+              />
+              <TextField
+                label="Email"
+                value={customerEmail}
+                onChange={({ target }) => setCustomerEmail(target.value)}
+              />
+              <TextField
+                label="Address"
+                value={customerAddress}
+                onChange={({ target }) => setCustomerAddress(target.value)}
+              />
+              <TextField
+                label="Notes"
+                value={customerNotes}
+                onChange={({ target }) => setCustomerNotes(target.value)}
+              />
+            </>
+            : <Autocomplete
+                options={customers ? customers : []}
+                noOptionsText={customers ? "No matching customers" : "Loading data"}
+                autoHighlight
+                getOptionKey={(option) => option.id}
+                getOptionLabel={(option) => option.name}
+                renderOption={(props, option) => {
+                  const { key, ...optionProps } = props;
+                  return (
+                    <Box
+                      key={key}
+                      component="li"
+                      sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
+                      {...optionProps}
+                    >
+                      {option.name} {"\u00A0\u00A0"}
+                      <span style={{ color: 'grey', fontSize: '0.8rem' }} >{option.phone}</span>
+                    </Box>
+                  );
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Choose a customer"
+                    slotProps={{
+                      ...params.slotProps,
+                      htmlInput: {
+                        ...params.slotProps.htmlInput,
+                        autoComplete: 'new-password', // disable autocomplete and autofill
+                      },
+                    }}
+                  />
+                )}
+              />
+
+        }
+        
 
         <Typography variant="h6">Cheque Details</Typography>
         <TextField
@@ -144,3 +213,14 @@ const ChequeForm = () => {
 };
 
 export default ChequeForm;
+
+/**
+ *   <RadioGroup
+          //name="controlled-radio-buttons-group"
+          value={returningCustomer}
+          onChange={({ target }) => setReturningCustomer(target.value === "ret" ? true : false)}
+        >
+          <FormControlLabel value="ret" control={<Radio />} label="Returning Customer" />
+          <FormControlLabel value="new" control={<Radio />} label="New Customer" />
+        </RadioGroup>
+ */

@@ -1,38 +1,53 @@
-import { Route, Routes, useMatch } from "react-router";
+import { Route, Routes } from "react-router";
 
 import Date from "./components/Date";
 import Cheque from "./components/chequeView/Cheque.tsx";
 import Customer from "./components/customerView/Customer.tsx";
 import ChequeForm from "./components/ChequeForm";
-
-import { useCheques } from "./hooks/useCheques.ts";
-import { useCustomers } from "./hooks/useCustomers.ts";
+import HeaderBar from "./components/HeaderBar.tsx";
+//import { useCheques } from "./hooks/useCheques.ts";
+//import { useCustomers } from "./hooks/useCustomers.ts";
+import { useEffect, useState } from "react";
+import useLoggedInUser from "./zustand/zustand.ts";
+import { UserDetailsType } from "../types.ts";
+import Login from "./components/Login.tsx";
 
 function App() {
-  const { cheques } = useCheques()
-  const { customers } = useCustomers()
+  //
+  const [loading, setLoading] = useState(true)
 
-  const match1 = useMatch("/cheque/:chequeid");
-  // Can sidestep useMatch by obtaining the required cheque/customer in the relevant component - would (?) still
-  // require a similar check to the following tho, with useParams or smthn 
-  const cheque = match1 && cheques
-    ? cheques.find((c) => c.id === match1.params.chequeid)
-    : undefined;
+  const user = useLoggedInUser((state) => state.user)
+  const setUser = useLoggedInUser((state) => state.setUser)
 
-  const match2 = useMatch("/customer/:custid");
-  const cust = match2 && customers
-    ? customers.find((c) => c.id === match2.params.custid)
-    : undefined;
+  useEffect(() => {
+    const prevUserString = localStorage.getItem("chequesAppUser")
+    const prevUser: UserDetailsType | null = prevUserString ? JSON.parse(prevUserString) : null
+    if (prevUser) setUser(prevUser)
+    setLoading(false)
+  }, [])
+  
+  console.log(loading)
+
+  // Whlie loading, return a big loading spinner
 
   return (
     <>
-      <Routes>
-        <Route path="/" element={<Date />} />
-        <Route path="/date/:dateid" />
-        <Route path="/customer/:custid" element={<Customer cust={cust} />} />
-        <Route path="/cheque/:chequeid" element={<Cheque ch={cheque} />} />
-        <Route path="/newcheque" element={<ChequeForm />} />
-      </Routes>
+      <div>
+        {
+          user
+          ? <>
+              <HeaderBar/>
+              <Routes>
+                <Route path="/" element={<Date />} />
+                <Route path="/date/:dateid" />
+                <Route path="/customer/:custid" element={<Customer />} />
+                <Route path="/cheque/:chequeid" element={<Cheque />} />
+                <Route path="/newcheque" element={<ChequeForm />} />
+              </Routes>
+            </>
+          : <Login />
+        }
+      </div>
     </>
   );
 }

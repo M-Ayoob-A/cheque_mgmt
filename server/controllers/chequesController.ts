@@ -3,6 +3,7 @@ import { ChequeSchema } from '../types.ts'
 import express, { type Response, type Request, type NextFunction } from 'express';
 import { CustomerModel } from '../models/customer.ts';
 import errorMiddleware from '../middleware/errorMiddleware.ts';
+import tokenExtractor from '../middleware/tokenExtractor.ts';
 
 const chequeParser = (req: Request, _res: Response, next: NextFunction) => {
   try {
@@ -15,23 +16,29 @@ const chequeParser = (req: Request, _res: Response, next: NextFunction) => {
 
 const chequeRouter = express.Router()
 
+chequeRouter.use(tokenExtractor)
+
 chequeRouter.get('/', async (_req: Request, res: Response<MChequeType[]>) => {
   // query params are date, company
   //res.json(data.chequeData)
   const cheques = await ChequeModel.find({}).populate('customer', { name: 1, id: 1})
   
-  res.json(cheques)
+  res.status(200).json(cheques)
 })
 
 chequeRouter.get('/:id', async (req: Request, res: Response) => {
-  const cheque = await ChequeModel.find({ 'id' : req.params.id }).populate('customer', { name: 1, id: 1})//{ name: 1 })
-  res.json(cheque)
+  const cheque = await ChequeModel.findById(req.params.id)
+  
+  if (cheque) {
+    res.status(200).json(cheque)
+  } else {
+    res.status(404).json({ error: "Cannot find cheque with the specified ID" })
+  }
 })
 
 chequeRouter.post('/', chequeParser, async (req: Request, res: Response) => {
   //const user = request.user
   const reqbody = req.body
-  console.log(reqbody)
 
   const cheque = new ChequeModel({
     amount: reqbody.amount,
@@ -44,32 +51,21 @@ chequeRouter.post('/', chequeParser, async (req: Request, res: Response) => {
   })
 
   const newCheque = await cheque.save()
-
-  /*const cust = await CustomerModel.find({ 'name' : reqbody.customer });
-
-  if (!cust)*/
-
-  // TODO: Create new customer account if not already present
-  
-  // chequeWithCustomerDetails = await newCheque.populate('customer')
   res.status(201).json(newCheque)
 })
-
-
 
 chequeRouter.put('/:id/realdate', async (req: Request, res: Response) => {
   //const user = request.user
   const newdate = req.body.date
-  console.log(newdate)
 
-  let chequeToUpdate = await ChequeModel.findById(req.params.id)
+  const chequeToUpdate = await ChequeModel.findById(req.params.id)
 
   if (!chequeToUpdate) {
-    res.status(400).json({ error: 'Invalid cheque ID' })
+    res.status(404).json({ error: 'Invalid cheque ID' })
   } else {
     chequeToUpdate.realisation_date = newdate
-    const newCheque = await chequeToUpdate.save()
-    res.status(201).json(newCheque)
+    await chequeToUpdate.save()
+    res.status(204).send("Successfully updated realisation date")
   }
 })
 
@@ -79,13 +75,13 @@ chequeRouter.put('/:id/submit', async (req: Request, res: Response) => {
   let chequeToUpdate = await ChequeModel.findById(req.params.id)
 
   if (!chequeToUpdate) {
-    res.status(400).json({ error: 'Invalid cheque ID' })
+    res.status(404).json({ error: 'Invalid cheque ID' })
   } else if (chequeToUpdate.submitted) {
     res.status(400).json({ error: 'Cheque already marked as submitted' })
   } else {
     chequeToUpdate.submitted = true
-    const newCheque = await chequeToUpdate.save()
-    res.status(201).json(newCheque)
+    await chequeToUpdate.save()
+    res.status(204).send("Successfully updated cheque status")
   }
 })
 
@@ -100,7 +96,7 @@ chequeRouter.delete('/:id', async (req: Request, res: Response) => {
   
   if (!remainingCheques.length) await CustomerModel.findByIdAndDelete(deletedCheque.customer)
   
-  res.status(201).send("Successfully deleted")
+  res.status(204).send("Successfully deleted")
   /*await ChequeModel.findByIdAndDelete(req.params.id)
   //if (deletedCustomer) res.status(404).send("Could not find customer")
   res.status(201).send()*/

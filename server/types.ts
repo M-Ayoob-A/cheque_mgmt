@@ -24,3 +24,11 @@ export const CustomerSchema = z.object({
 })
 
 //export type CustomerType = z.infer<typeof CustomerSchema>;
+
+declare global {
+  namespace Express {
+    interface Request {
+      userId?: string;
+    }
+  }
+}

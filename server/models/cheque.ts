@@ -46,8 +46,3 @@ export type MChequeType = InferSchemaType<typeof chequeSchema> & {
   customer: Types.ObjectId | MCustomerType; 
 };
 export const ChequeModel = model<MChequeType>('Cheque', chequeSchema);
-
-//module.exports = model('Cheque', chequeSchema)
-
-//6a5424488e8698cada8973bd
-//6a5424488e8698cada8973bc

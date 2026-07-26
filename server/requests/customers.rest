@@ -1,5 +1,6 @@
 ###
 
 GET http://localhost:3000/api/customers
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InlvbyIsImlkIjoiNmE1ZDkxMDg1NTY4ZGYwN2ZiMzllMzI1IiwiaWF0IjoxNzg0NTIxMDc2fQ.jRQkDYhVZ9xMBeEGCV0s1ajJJ89teiTfoTrpNAqzkrE
 
 ###

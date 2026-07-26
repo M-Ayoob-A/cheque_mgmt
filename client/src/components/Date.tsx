@@ -84,6 +84,7 @@ const Date = () => {
         onClick={() => {
           navigate("/newcheque");
         }}
+        sx={{ margin: 'auto' }}
       >
         Create New Cheque
       </Button>

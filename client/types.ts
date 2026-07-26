@@ -26,3 +26,14 @@ export interface CustomerType {
 }
 
 export type CustomerFormType = Omit<CustomerType, "id">;
+
+export interface LoginFormType {
+  username: string;
+  password: string;
+}
+
+export interface UserDetailsType {
+  token: string;
+  username: string;
+  name: string;
+}

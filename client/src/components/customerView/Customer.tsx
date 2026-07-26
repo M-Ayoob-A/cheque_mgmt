@@ -6,13 +6,23 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 
-import { CustomerType } from '../../../types.ts'
+//import { CustomerType } from '../../../types.ts'
 import EditCustomerDialog from './EditCustomerDialog.tsx';
 import { useState } from 'react';
+import { useCustomers } from "../../hooks/useCustomers.ts";
+import { useParams } from 'react-router';
 
-const Customer = ({ cust }: { cust: CustomerType | undefined }) => {
+const Customer = () => {
   
   const [openDialog, setOpenDialog] = useState(false);
+
+  const { custid } = useParams();
+
+  const { customers } = useCustomers()
+
+  const cust = custid && customers
+    ? customers.find((c) => c.id === custid)
+    : undefined;
   
   const handleOpenDialog = () => {
     setOpenDialog(true)
