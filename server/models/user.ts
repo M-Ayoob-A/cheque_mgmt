@@ -1,24 +1,17 @@
 import { Schema, model, type InferSchemaType/*, Types*/ } from 'mongoose';
 //import type { MChequeType } from './cheque.ts';
 
-const customerSchema = new Schema({
+const userSchema = new Schema({
   name: {
     type: String,
     required: true
   },
-  phone: {
+  username: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
-  email: {
-    type: String,
-    required: true
-  },
-  address: {
-    type: String,
-    required: true
-  },
-  notes: {
+  passwordHash: {
     type: String,
     required: true
   }
@@ -29,10 +22,11 @@ const customerSchema = new Schema({
     transform: (_document, returnedObject: Record<string, any>) => {
       returnedObject.id = returnedObject._id.toString()
       delete returnedObject._id
+      delete returnedObject.passwordHash
       return returnedObject
     }
   }
 })
 
-export type MCustomerType = InferSchemaType<typeof customerSchema>
-export const CustomerModel = model<MCustomerType>('Customer', customerSchema);
+export type MUserType = InferSchemaType<typeof userSchema>
+export const UserModel = model<MUserType>('User', userSchema);

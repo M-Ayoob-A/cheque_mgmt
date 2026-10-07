@@ -7,12 +7,17 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-const ChangeRealDateDialog = ({ openDialog, handleClose } : { openDialog: boolean, handleClose: () => void }) => {
+import { useCheques } from '../../hooks/useCheques.ts';
+
+const ChangeRealDateDialog = ({ openDialog, handleClose, id } : { openDialog: boolean, handleClose: () => void, id: string }) => {
 
   const [newDate, setNewDate] = React.useState('')
+
+  const { changeRealisationDate } = useCheques()
   
   const handleSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
+    changeRealisationDate(newDate, id)
     console.log(newDate);
     handleClose();
   };
@@ -38,6 +43,9 @@ const ChangeRealDateDialog = ({ openDialog, handleClose } : { openDialog: boolea
               variant="standard"
               value={newDate}
               onChange={({ target }) => setNewDate(target.value)}
+              slotProps={{
+                inputLabel: { shrink: true }
+              }}
             />
           </form>
         </DialogContent>
