@@ -1,0 +1,18 @@
+{
+  "name": "Sovereign AI Dev Container",
+  "image": "://microsoft.com",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    }
+  },
+  "forwardPorts": [11434],
+  "postCreateCommand": "bash .devcontainer/setup-agent.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.azure-account"
+      ]
+    }
+  }
+}
