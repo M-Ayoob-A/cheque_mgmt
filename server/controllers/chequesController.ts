@@ -42,12 +42,16 @@ chequeRouter.post('/', chequeParser, async (req: Request, res: Response) => {
 
   const cheque = new ChequeModel({
     amount: reqbody.amount,
+    number: reqbody.number,
     customer: reqbody.customer,
     submitted: false,
     agent: reqbody.agent,
     bank: reqbody.bank,
+    branch: reqbody.branch,
     realisation_date: reqbody.realisation_date,
-    issue_date: reqbody.issue_date
+    issue_date: reqbody.issue_date,
+    notes: reqbody.notes
+
   })
 
   const newCheque = await cheque.save()

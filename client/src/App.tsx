@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import useLoggedInUser from "./zustand/zustand.ts";
 import { UserDetailsType } from "../types.ts";
 import Login from "./components/Login.tsx";
+import { Box, CircularProgress } from "@mui/material";
 
 function App() {
   //
@@ -28,7 +29,11 @@ function App() {
   
   console.log(loading)
 
-  // Whlie loading, return a big loading spinner
+  if (loading) {
+    return <Box sx={{ width: '100vw', height: '100vh', display:'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <CircularProgress sx={{ minWidth: '200px', minHeight: '200px' }} />
+    </Box>
+  }
 
   return (
     <>

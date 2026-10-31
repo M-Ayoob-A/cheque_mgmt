@@ -11,7 +11,10 @@ const HeaderBar = () => {
           <Typography sx={{ flexGrow: 1 }} variant="h6" >
             Welcome, {user ? user.name : "User"}
           </Typography>
-          <Button onClick={removeUser} sx={{ color: 'white' }} >Logout</Button>
+          <Typography sx={{ flexGrow: 1 }} variant="h2" >
+            Axo Trade
+          </Typography>
+          <Button onClick={removeUser} sx={{ color: 'white', flexGrow: 1 }} >Logout</Button>
         </Toolbar>
       </AppBar>
       <Toolbar />

@@ -1,5 +1,6 @@
 export interface ChequeType {
   id: string;
+  number: number;
   amount: number;
   customer: {
     name: string,
@@ -8,8 +9,10 @@ export interface ChequeType {
   submitted: boolean;
   agent: string;
   bank: string;
+  branch: string;
   issue_date: string;
   realisation_date: string;
+  notes: string;
 }
 
 export interface ChequeFormType extends Omit<ChequeType, "id" | "submitted" | "customer"> {

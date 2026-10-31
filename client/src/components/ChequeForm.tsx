@@ -6,7 +6,7 @@ import { useCustomers } from "../hooks/useCustomers.ts";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import { Alert, Autocomplete, Box, FormControlLabel, Switch } from "@mui/material";
+import { Alert, Autocomplete, Box, Container, FormControlLabel, Switch } from "@mui/material";
 
 const ChequeForm = () => {
   // new/returning customer
@@ -25,6 +25,10 @@ const ChequeForm = () => {
   const [realDate, setRealDate] = useState("");
   const [issueDate, setIssueDate] = useState("");
   const [agent, setAgent] = useState("");
+  const [branch, setBranch] = useState("");
+  const [number, setNumber] = useState(0);
+  const [notes, setNotes] = useState("");
+
 
   const [errMsg, setErrMsg] = useState("")
 
@@ -49,7 +53,10 @@ const ChequeForm = () => {
       amount: amount,
       realisation_date: realDate,
       issue_date: issueDate,
-      agent: agent
+      agent: agent,
+      branch: branch,
+      number: number,
+      notes: notes,
     })
   }
 
@@ -68,7 +75,10 @@ const ChequeForm = () => {
       amount: amount,
       realisation_date: realDate,
       issue_date: issueDate,
-      agent: agent
+      agent: agent,
+      branch: branch,
+      number: number,
+      notes: notes,
     })
   }
 
@@ -91,124 +101,147 @@ const ChequeForm = () => {
   };
 
   return (
-    <Box style={{ display: 'flex', flexDirection: 'column', gap: '15px' }} >
-      <Typography variant="h5">Create a new Cheque</Typography>
-
-      {
-        errMsg && <Alert>{errMsg}</Alert>
-      }
-
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '60vw' }}>
-        <Typography variant="h6">Customer Details</Typography>
-
-        <FormControlLabel 
-          control={
-            <Switch checked={newCustomer} onChange={({ target }) => setNewCustomer(target.checked)} />
-          } 
-          label="New Customer"
-        />
+    <Container>
+      <Box style={{ display: 'flex', flexDirection: 'column', gap: '15px' }} >
+        <Typography variant="h5">Create a new Cheque</Typography>
 
         {
-          newCustomer
-          ? <>
-              <TextField
-                label="Name"
-                value={customerName}
-                onChange={({ target }) => setCustomerName(target.value)}
-              />
-              <TextField
-                label="Phone"
-                value={customerPhone}
-                onChange={({ target }) => setCustomerPhone(target.value)}
-              />
-              <TextField
-                label="Email"
-                value={customerEmail}
-                onChange={({ target }) => setCustomerEmail(target.value)}
-              />
-              <TextField
-                label="Address"
-                value={customerAddress}
-                onChange={({ target }) => setCustomerAddress(target.value)}
-              />
-              <TextField
-                label="Notes"
-                value={customerNotes}
-                onChange={({ target }) => setCustomerNotes(target.value)}
-              />
-            </>
-            : <Autocomplete
-                options={customers ? customers : []}
-                noOptionsText={customers ? "No matching customers" : "Loading data"}
-                autoHighlight
-                getOptionKey={(option) => option.id}
-                getOptionLabel={(option) => option.name}
-                renderOption={(props, option) => {
-                  const { key, ...optionProps } = props;
-                  return (
-                    <Box
-                      key={key}
-                      component="li"
-                      sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
-                      {...optionProps}
-                    >
-                      {option.name} {"\u00A0\u00A0"}
-                      <span style={{ color: 'grey', fontSize: '0.8rem' }} >{option.phone}</span>
-                    </Box>
-                  );
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Choose a customer"
-                    slotProps={{
-                      ...params.slotProps,
-                      htmlInput: {
-                        ...params.slotProps.htmlInput,
-                        autoComplete: 'new-password', // disable autocomplete and autofill
-                      },
-                    }}
-                  />
-                )}
-              />
-
+          errMsg && <Alert>{errMsg}</Alert>
         }
-        
 
-        <Typography variant="h6">Cheque Details</Typography>
-        <TextField
-          label="bank"
-          value={bank}
-          onChange={({ target }) => setBank(target.value)}
-        />
-        <TextField
-          label="amount"
-          value={amount}
-          onChange={({ target }) => setAmount(Number(target.value))}
-        />
-        <TextField
-          label="Issue Date"
-          value={issueDate}
-          onChange={({ target }) => setIssueDate(target.value)}
-        />
-        <TextField
-          label="Realisation Date"
-          value={realDate}
-          onChange={({ target }) => setRealDate(target.value)}
-        />
-        <TextField
-          label="agent"
-          value={agent}
-          onChange={({ target }) => setAgent(target.value)}
-        />
-        <Button type="submit" variant="contained" style={{ width: '50%' }}>
-          Create
-        </Button>
-        <Button onClick={() => navigate("/")} variant="outlined" color="error" style={{ width: '50%' }}>
-          Cancel
-        </Button>
-      </form>
-    </Box>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '60vw' }}>
+          <Typography variant="h6">Customer Details</Typography>
+
+          <FormControlLabel 
+            control={
+              <Switch checked={newCustomer} onChange={({ target }) => setNewCustomer(target.checked)} />
+            } 
+            label="New Customer"
+          />
+
+          {
+            newCustomer
+            ? <>
+                <TextField
+                  label="Name"
+                  value={customerName}
+                  onChange={({ target }) => setCustomerName(target.value)}
+                />
+                <TextField
+                  label="Phone"
+                  value={customerPhone}
+                  onChange={({ target }) => setCustomerPhone(target.value)}
+                />
+                <TextField
+                  label="Email"
+                  value={customerEmail}
+                  onChange={({ target }) => setCustomerEmail(target.value)}
+                />
+                <TextField
+                  label="Address"
+                  value={customerAddress}
+                  onChange={({ target }) => setCustomerAddress(target.value)}
+                />
+                <TextField
+                  label="Notes"
+                  value={customerNotes}
+                  onChange={({ target }) => setCustomerNotes(target.value)}
+                />
+              </>
+              : <Autocomplete
+                  options={customers ? customers : []}
+                  noOptionsText={customers ? "No matching customers" : "Loading data"}
+                  autoHighlight
+                  getOptionKey={(option) => option.id}
+                  getOptionLabel={(option) => option.name}
+                  renderOption={(props, option) => {
+                    const { key, ...optionProps } = props;
+                    return (
+                      <Box
+                        key={key}
+                        component="li"
+                        sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
+                        {...optionProps}
+                      >
+                        {option.name} {"\u00A0\u00A0"}
+                        <span style={{ color: 'grey', fontSize: '0.8rem' }} >{option.phone}</span>
+                      </Box>
+                    );
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Choose a customer"
+                      slotProps={{
+                        ...params.slotProps,
+                        htmlInput: {
+                          ...params.slotProps.htmlInput,
+                          autoComplete: 'new-password', // disable autocomplete and autofill
+                        },
+                      }}
+                    />
+                  )}
+                />
+
+          }
+          
+
+          <Typography variant="h6">Cheque Details</Typography>
+          <TextField
+            label="Cheque Number"
+            value={number}
+            type="number"
+            onChange={({ target }) => setNumber(Number(target.value))}
+          />
+          <TextField
+            label="Bank"
+            value={bank}
+            onChange={({ target }) => setBank(target.value)}
+          />
+          <TextField
+            label="Bank Branch"
+            value={branch}
+            onChange={({ target }) => setBranch(target.value)}
+          />
+          <TextField
+            label="Amount"
+            value={amount}
+            type="number"
+            onChange={({ target }) => setAmount(Number(target.value))}
+          />
+          <TextField
+            label="Issue Date"
+            value={issueDate}
+            type="date"
+            onChange={({ target }) => setIssueDate(target.value)}
+            slotProps={{ inputLabel: { shrink: true } }}
+          />
+          <TextField
+            label="Realisation Date"
+            value={realDate}
+            type="date"
+            onChange={({ target }) => setRealDate(target.value)}
+            slotProps={{ inputLabel: { shrink: true } }}
+          />
+          <TextField
+            label="Agent"
+            value={agent}
+            onChange={({ target }) => setAgent(target.value)}
+          />
+          <TextField
+            label="Notes"
+            value={notes}
+            onChange={({ target }) => setNotes(target.value)}
+          />
+          <Button type="submit" variant="contained" style={{ width: '50%' }}>
+            Create
+          </Button>
+          <Button onClick={() => navigate("/")} variant="outlined" color="error" style={{ width: '50%' }}>
+            Cancel
+          </Button>
+        </form>
+      </Box>
+    </Container>
   );
 };
 

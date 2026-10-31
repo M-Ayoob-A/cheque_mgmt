@@ -6,6 +6,10 @@ const chequeSchema = new Schema({
     type: Number,
     required: true
   },
+  number: {
+    type: Number,
+    required: true
+  },
   customer: {
     type: Schema.Types.ObjectId,
     ref: 'Customer'
@@ -22,6 +26,10 @@ const chequeSchema = new Schema({
     type: String,
     required: true
   },
+  branch: {
+    type: String,
+    required: true
+  },
   issue_date: {
     type: Date,
     required: true
@@ -30,6 +38,10 @@ const chequeSchema = new Schema({
     type: Date,
     required: true
   },
+  notes: {
+    type: String,
+    required: true
+  }
 }, {
   toJSON: {
     virtuals: true,
